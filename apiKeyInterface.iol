@@ -1,6 +1,6 @@
 type generatedHashRequest : void {
-  .id : string
   .gt : long
+  .id : string
   .data : string
 }
 
@@ -16,25 +16,13 @@ type generatedApiKeyRequest : void {
   .data : string
 }
 
-type generatedApiKeyResponse : void {
-  .abilitated : bool
-  .apiKey : ApiKey
-}
-
-type checkDataRequest : void {
-  .id : string
-  .apiKey : ApiKey
-}
-
 type checkDataResponse : void {
-  .abilitated : bool
   .check : bool
 }
 
 interface ApiKeyInterface {
   RequestResponse:
-    isAbilitated( string )( bool ),
     generatedHash( generatedHashRequest )( string ),
-    generatedApiKey( generatedApiKeyRequest )( generatedApiKeyResponse ),
-    checkData( checkDataRequest )( checkDataResponse )
+    generatedApiKey( generatedApiKeyRequest )( ApiKey ),
+    checkData( ApiKey )( checkDataResponse )
 }
