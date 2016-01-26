@@ -25,14 +25,14 @@ main {
     md5@MessageDigest(request.data + request.gt + SecretWord + request.id )( hash );
     response = hash
   }] { nullProcess }
-  
+
   // Function to generate an ApiKey
 
   [ generatedApiKey( request )( response ){
       getCurrentTimeMillis@Time()( gt );
+      response.idSender = request.id;
       response.generatedTime = gt;
       response.data = request.data;
-      response.idSender = request.id;
       hashDemand.id = request.id;
       hashDemand.gt = gt;
       hashDemand.data = request.data;

@@ -63,10 +63,12 @@ main {
     generatedApiRequest.data = request.name;
     generatedApiKey@ApiKeyService( generatedApiRequest )( ApiKeyResponse );
       if( request.service == "one" ){
-        hello@ServiceOne( ApiKeyResponse )( return );
+        sOR.apiKey = ApiKeyResponse;
+        hello@ServiceOne( sOR )( return );
         CompleteProc
       } else if ( request.service == "two" ) {
-        hello@ServiceTwo( ApiKeyResponse )( return );
+        sTR.apiKey = ApiKeyResponse;
+        hello@ServiceTwo( sTR )( return );
         CompleteProc
       } else {
         response.msg = " Non risulta nessun servizio con questo id."
