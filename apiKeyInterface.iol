@@ -16,13 +16,9 @@ type generatedApiKeyRequest : void {
   .data : string
 }
 
-type checkDataResponse : void {
-  .check : bool
-}
-
 interface ApiKeyInterface {
   RequestResponse:
     generatedHash( generatedHashRequest )( string ),
     generatedApiKey( generatedApiKeyRequest )( ApiKey ),
-    checkData( ApiKey )( checkDataResponse )
+    checkData( ApiKey )( bool )
 }

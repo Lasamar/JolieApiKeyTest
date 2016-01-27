@@ -1,6 +1,6 @@
 type helloRequest : void {
   .service : string
-  .name : string 
+  .name : string
 }
 
 type MsgJson : void {

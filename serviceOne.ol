@@ -48,7 +48,7 @@ courier ServiceOne{
     checkData@ApiKeyService( request.apiKey )( check );
     if(check){
       println@Console("qui la cosa si fa grama")();
-      request = request.apiKey.data;
+      println@Console(request)();
       forward( request )( response )
     } else {
       throw( error )
@@ -60,13 +60,16 @@ define CompleteProc {
   generatedApiRequest.id = "ServiceOne";
   generatedApiRequest.data = response;
   generatedApiKey@ApiKeyService( generatedApiRequest )( ApiKeyResponse );
-  response.apiKey = ApiKeyResponse;
-  println@Console("Se siamo arrivati fino a qui...")()
+  response.apiKey.idSender = ApiKeyResponse.idSender;
+  response.apiKey.generatedTime = ApiKeyResponse.generatedTime;
+  response.apiKey.data = ApiKeyResponse.data;
+  response.apiKey.hash = ApiKeyResponse.hash
 }
 
 main {
   hello( request )( response ){
     answer = "Hello World from Service One to " + request.data;
+    println@Console(answer)();
     response = answer;
     CompleteProc
   }
