@@ -44,10 +44,8 @@ embedded {
 
 courier ServiceOne{
   [interface ServiceOneInterface( request )( response )]{
-    println@Console("Entro nella courier")();
     checkData@ApiKeyService( request.apiKey )( check );
     if(check){
-      println@Console("qui la cosa si fa grama")();
       println@Console(request)();
       forward( request )( response )
     } else {

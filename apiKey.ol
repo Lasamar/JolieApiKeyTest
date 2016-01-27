@@ -27,8 +27,7 @@ main {
 
   [ generatedHash( request )( response ){
     md5@MessageDigest(request.data + request.gt + SecretWord + request.id )( hash );
-    response = hash;
-    println@Console(" hasha pronto, uguale a" + response)()
+    response = hash
   }] { nullProcess }
 
   // Function to generate an ApiKey
