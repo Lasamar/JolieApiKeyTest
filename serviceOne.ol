@@ -5,7 +5,7 @@ include "console.iol"
 
 execution { concurrent }
 
-type AddApiKey : void {
+type AddApiKey : string {
   .apiKey : ApiKey
 }
 
@@ -42,18 +42,6 @@ embedded {
 	Jolie: "apiKey.ol" in ApiKeyService
 }
 
-courier ServiceOne{
-  [interface ServiceOneInterface( request )( response )]{
-    checkData@ApiKeyService( request.apiKey )( check );
-    if(check){
-      println@Console(request)();
-      forward( request )( response )
-    } else {
-      throw( error )
-    }
-  }
-}
-
 define CompleteProc {
   generatedApiRequest.id = "ServiceOne";
   generatedApiRequest.data = response;
@@ -64,11 +52,23 @@ define CompleteProc {
   response.apiKey.hash = ApiKeyResponse.hash
 }
 
+courier ServiceOne{
+  [interface ServiceOneInterface( request )( response )]{
+    checkData@ApiKeyService( request.apiKey )( check );
+    if(check){
+      println@Console(request)();
+      forward( request )( response );
+      CompleteProc
+    } else {
+      throw( error )
+    }
+  }
+}
+
 main {
   hello( request )( response ){
     answer = "Hello World from Service One to " + request.data;
     println@Console(answer)();
-    response = answer;
-    CompleteProc
+    response = answer
   }
 }
