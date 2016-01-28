@@ -2,21 +2,13 @@ include "file.iol"
 include "console.iol"
 include "config.iol"
 include "apiKeyInterface.iol"
-include "serviceTwointerface.iol"
+include "serviceTwoSurface.iol"
 include "serviceOneSurface.iol"
 include "clientInterface.iol"
 
 execution { concurrent }
 
 // Output Ports
-
-
-
-outputPort ServiceTwo{
-  Location : Two_location
-  Protocol : sodep
-  Interfaces : ServiceTwoInterface
-}
 
 outputPort ApiKeyService {
   Location: "local"

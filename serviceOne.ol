@@ -2,8 +2,13 @@ include "serviceOneInterface.iol"
 include "apiKeyInterface.iol"
 include "config.iol"
 include "console.iol"
+include "runtime.iol"
 
 execution { concurrent }
+
+init {
+    getLocalLocation@Runtime()( SO.location )
+}
 
 type AddApiKey : string {
   .apiKey : ApiKey
@@ -21,7 +26,6 @@ inputPort SO{
 }
 
 outputPort SO{
-  Location: "local"
   Protocol: sodep
   Interfaces: ServiceOneInterface
 }
@@ -56,7 +60,6 @@ courier ServiceOne{
   [interface ServiceOneInterface( request )( response )]{
     checkData@ApiKeyService( request.apiKey )( check );
     if(check){
-      println@Console(request)();
       forward( request )( response );
       CompleteProc
     } else {
@@ -67,8 +70,7 @@ courier ServiceOne{
 
 main {
   hello( request )( response ){
-    answer = "Hello World from Service One to " + request.data;
-    println@Console(answer)();
+    answer = "Hello World from Service One to " + request;
     response = answer
   }
 }

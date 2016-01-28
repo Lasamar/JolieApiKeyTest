@@ -2,63 +2,75 @@ include "serviceTwoInterface.iol"
 include "apiKeyInterface.iol"
 include "config.iol"
 include "console.iol"
+include "runtime.iol"
 
 execution { concurrent }
+
+init {
+    getLocalLocation@Runtime()( SO.location )
+}
+
+type AddApiKey : string {
+  .apiKey : ApiKey
+}
+
+interface extender ServiceTwoExtended1{
+  RequestResponse:
+  *(AddApiKey)(AddApiKey)
+}
+
+inputPort SO{
+  Location: "local"
+  Protocol: sodep
+  Interfaces: ServiceTwoInterface
+}
+
+outputPort SO{
+  Protocol: sodep
+  Interfaces: ServiceTwoInterface
+}
 
 inputPort ServiceTwo{
   Location : Two_location
   Protocol : sodep
-  Interfaces : ServiceTwoInterface
+  Aggregates: SO with ServiceTwoExtended1
 }
 
 outputPort ApiKeyService {
-  Location : ApiKey_Location
-  Protocol : sodep
   Interfaces : ApiKeyInterface
 }
 
+// Embedded Services
 
-define fillApi2 {
-  response.idSender = ApiKeyResponse.apiKey.idSender;
-  response.generatedTime = ApiKeyResponse.apiKey.generatedTime;
-  response.data = ApiKeyResponse.apiKey.data;
-  response.hash = ApiKeyResponse.apiKey.hash
-}
-
-define fillApi {
-  checkDataRequest.apiKey.idSender = request.idSender;
-  checkDataRequest.apiKey.generatedTime = request.generatedTime;
-  checkDataRequest.apiKey.data = request.data;
-  checkDataRequest.apiKey.hash = request.hash
+embedded {
+	Jolie: "apiKey.ol" in ApiKeyService
 }
 
 define CompleteProc {
-  println@Console("avvio procedura risposta...")();
   generatedApiRequest.id = "ServiceTwo";
-  generatedApiRequest.data = answer;
+  generatedApiRequest.data = response;
   generatedApiKey@ApiKeyService( generatedApiRequest )( ApiKeyResponse );
-  fillApi2
+  response.apiKey.idSender = ApiKeyResponse.idSender;
+  response.apiKey.generatedTime = ApiKeyResponse.generatedTime;
+  response.apiKey.data = ApiKeyResponse.data;
+  response.apiKey.hash = ApiKeyResponse.hash
+}
+
+courier ServiceTwo{
+  [interface ServiceTwoInterface( request )( response )]{
+    checkData@ApiKeyService( request.apiKey )( check );
+    if(check){
+      forward( request )( response );
+      CompleteProc
+    } else {
+      throw( error )
+    }
+  }
 }
 
 main {
   hello( request )( response ){
-    println@Console("Inizio gestiTwo richiesta...")();
-    checkDataRequest.id = "ServiceTwo";
-    fillApi;
-    println@Console("Mi preparo a verificare la validita dei dati...")();
-    checkData@ApiKeyService( checkDataRequest )( checkDataResponse );
-    if(checkDataResponse.abilitated){
-      if(checkDataResponse.check){
-        println@Console("il dato risulta valido... Preparo risposta...")();
-        answer = "Hello World from Service Two to " + request.data;
-        CompleteProc
-      } else {
-        answer = "La richiesta al Service Two  e` corrotta.";
-        CompleteProc
-      }
-    } else {
-      answer = "Il Service Two non e` abilitato a rispondere.";
-      CompleteProc
-    }
+    answer = "Hello World from Service Two to " + request;
+    response = answer
   }
 }
